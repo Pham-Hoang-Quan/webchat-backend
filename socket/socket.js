@@ -16,6 +16,13 @@ export const getReceiverSocketId = (receiverId) => {
 	return userSocketMap[receiverId];
 };
 
+export const getReceiverSocketIds = (conversationId) => {
+	return conversationSocketMap[conversationId];
+};
+
+const conversationSocketMap = {}; // {conversationId: [socketId1, socketId2, ...]}
+
+
 const userSocketMap = {}; // {userId: socketId}
 
 io.on("connection", (socket) => {
@@ -23,7 +30,7 @@ io.on("connection", (socket) => {
 
 	const userId = socket.handshake.query.userId;
 	if (userId != "undefined") userSocketMap[userId] = socket.id;
-
+	
 	// io.emit() is used to send events to all the connected clients
 	io.emit("getOnlineUsers", Object.keys(userSocketMap));
 

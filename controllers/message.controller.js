@@ -26,6 +26,13 @@ export const sendMessage = async (req, res) => {
 			});
 		}
 
+		// Get the participants' ids
+		const participantIds = conversation.participants.filter(id => id !== senderId);
+
+		// Do something with the participantIds
+		// const receiverId = participantIds[0]
+
+
 		const newMessage = new Message({
 			senderId,
 			conversationId: conversationId,
@@ -38,19 +45,24 @@ export const sendMessage = async (req, res) => {
 		if (newMessage) {
 			conversation.messages.push(newMessage._id);
 		}
-
-		// await conversation.save();
-		// await newMessage.save();
-
 		// this will run in parallel
 		await Promise.all([conversation.save(), newMessage.save()]);
 
 		// SOCKET IO FUNCTIONALITY WILL GO HERE
-		const receiverSocketId = getReceiverSocketId(conversationId);
-		if (receiverSocketId) {
-			// io.to(<socket_id>).emit() used to send events to specific client
-			io.to(receiverSocketId).emit("newMessage", newMessage);
-		}
+		// const receiverSocketId = getReceiverSocketId(receiverId);
+		// if (receiverSocketId) {
+		// 	// io.to(<socket_id>).emit() used to send events to specific client
+		// 	io.to(receiverSocketId).emit("newMessage", newMessage);
+		// 	console.log("newMessage event emitted");
+		// }
+		participantIds.map(id => {
+			const receiverSocketId = getReceiverSocketId(id);
+			if (receiverSocketId) {
+				// io.to(<socket_id>).emit() used to send events to specific client
+				io.to(receiverSocketId).emit("newMessage", newMessage);
+				console.log("newMessage event emitted");
+			}
+		})
 
 		res.status(201).json(newMessage);
 	} catch (error) {
@@ -58,6 +70,8 @@ export const sendMessage = async (req, res) => {
 		res.status(500).json({ error: "Internal server error" });
 	}
 };
+
+
 
 export const getMessages = async (req, res) => {
 	try {

@@ -5,7 +5,7 @@ import protectRoute from "../middleware/protectRoute.js";
 const router = express.Router();
 
 router.get("/:id", getMessages);
-router.post("/send/:id/:senderId", sendMessage);
+router.post("/send/:id/:senderId" ,sendMessage);
 router.put('/recallMessage/:conversationId/:messageId', recallMessage);
 
 
