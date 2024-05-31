@@ -56,12 +56,14 @@ export const sendMessage = async (req, res) => {
 		// 	console.log("newMessage event emitted");
 		// }
 		participantIds.map(id => {
-			const receiverSocketId = getReceiverSocketId(id);
-			if (receiverSocketId) {
-				// io.to(<socket_id>).emit() used to send events to specific client
-				io.to(receiverSocketId).emit("newMessage", newMessage);
-				console.log("newMessage event emitted");
-			}
+			if (id != senderId) {
+				const receiverSocketId = getReceiverSocketId(id);
+				if (receiverSocketId) {
+					// io.to(<socket_id>).emit() used to send events to specific client
+					io.to(receiverSocketId).emit("newMessage", newMessage);
+					console.log("newMessage event emitted");
+				}
+			};
 		})
 
 		res.status(201).json(newMessage);
