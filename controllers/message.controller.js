@@ -73,8 +73,6 @@ export const sendMessage = async (req, res) => {
 	}
 };
 
-
-
 export const getMessages = async (req, res) => {
 	try {
 		// // const { id: userToChatId } = req.params;
@@ -127,3 +125,22 @@ export const recallMessage = async (req, res) => {
 		res.status(500).json({ error: "Internal server error" });
 	}
 };
+
+// hàm lấy tin nhắn theo conversationId và lọc ra nội dung tin nhắn có chứa firebasestorage.googleapis.com
+export const getImageMessages = async (req, res) => {
+	try {
+		const conversationId = req.params.conversationId;
+		const conversation = await Conversation.findById(conversationId).populate("messages");
+
+		if (!conversation) return res.status(200).json([]);
+
+		const messages = conversation.messages.filter(message => message.message.includes("firebasestorage.googleapis.com"));
+
+		res.status(200).json(messages);
+	} catch (error) {
+		console.log("Error in getMediaMessages controller: ", error.message);
+		res.status(500).json({ error: "Internal server error" });
+	}
+};
+
+// hàm lất tất cả tin nhắn của hệ thống sau đó lọc ra các tin nhắn có conversationId được truyền vào param sau đó loc
