@@ -26,6 +26,14 @@ const userSchema = new mongoose.Schema(
 			type: String,
 			default: "",
 		},
+		role: {
+			type: Boolean,
+			default: false,
+		},
+		isBlocked: { // Thêm trường isBlocked
+			type: Boolean,
+			default: false,
+		},
 		// createdAt, updatedAt => Member since <createdAt>
 	},
 	{ timestamps: true }
